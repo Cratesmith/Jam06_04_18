@@ -65,6 +65,7 @@ public class PhysicsCharacterController : SubComponent<Actor>
     private Vector3 m_prevPosition;
     private Rigidbody m_rigidBody;
     private CapsuleCollider m_capsuleCollider;
+    private Vector3 m_groundNormal;
 
     protected void Awake()
     {
@@ -133,18 +134,32 @@ public class PhysicsCharacterController : SubComponent<Actor>
             var withinStepHeight = raycastHit.distance - 0.001f <= m_colliderSettings.stepHeight;
 
             isGrounded = withinStepHeight && !m_isJumpRising;
+            if (isGrounded)
+            {
+                m_groundNormal = raycastHit.normal;                
+            }
 
-            if (Vector3.Angle(Vector3.up, raycastHit.normal) > m_maxSlopeAngle)
-            {                
-                var flatNormal  = new Vector3(raycastHit.normal.x, 0, raycastHit.normal.z).normalized;                       
+            var walkableSlope = Vector3.Angle(Vector3.up, raycastHit.normal) > m_maxSlopeAngle;
+            if (walkableSlope)
+            {
+                var flatNormal = new Vector3(raycastHit.normal.x, 0, raycastHit.normal.z).normalized;
                 desiredVelocity += -flatNormal * Vector3.Dot(flatNormal, desiredVelocity);
             }
 
             if (withinStepHeight && Vector3.Dot(raycastHit.normal, m_rigidBody.velocity)<=0)
             {
                 m_rigidBody.MovePosition(Vector3.Lerp(transform.position, groundPoint, 20f * Time.fixedDeltaTime));
-                m_rigidBody.velocity += -raycastHit.normal * Vector3.Dot(raycastHit.normal, m_rigidBody.velocity);                
-                
+                if (walkableSlope)
+                {
+                    var prevSpeed = m_rigidBody.velocity.magnitude;
+                    m_rigidBody.velocity += -raycastHit.normal * Vector3.Dot(raycastHit.normal, m_rigidBody.velocity);
+                    m_rigidBody.velocity = m_rigidBody.velocity.normalized * prevSpeed;
+
+                }
+                else
+                {
+                    m_rigidBody.velocity += -raycastHit.normal * Vector3.Dot(raycastHit.normal, m_rigidBody.velocity);                    
+                }
                 Debug.DrawRay(raycastHit.point, transform.forward, Color.green);
             }
         }
@@ -156,7 +171,6 @@ public class PhysicsCharacterController : SubComponent<Actor>
         // apply desired vel       
         var desiredVelDotVelXZ = Vector2.Dot(m_rigidBody.velocity.XZ(), moveXZ);
         var blendRate = isGrounded ? (desiredVelDotVelXZ>0?m_onGroundVelocityBlend:m_groundBreakVelocityBlend) : m_airVelocityBlend;
-        //Debug.LogFormat("{0} {1} {2} {3}", m_rigidBody.velocity.XZ(), desiredVelocity.XZ(), desiredVelDotVelXZ, blendRate);
         m_rigidBody.velocity = Vector3.Lerp(m_rigidBody.velocity, desiredVelocity, Time.fixedDeltaTime * blendRate);
 
 
@@ -164,8 +178,8 @@ public class PhysicsCharacterController : SubComponent<Actor>
             raycastHit.collider != null ? Color.green : Color.red);
        
         if (jump && isGrounded)
-        {
-            m_rigidBody.velocity += transform.up * m_jumpImpulse;
+        {            
+            m_rigidBody.velocity += Vector3.Lerp(m_groundNormal,transform.up,.5f) * m_jumpImpulse;
             jump = false;
             m_isJumpRising = true;
             isGrounded = false;
