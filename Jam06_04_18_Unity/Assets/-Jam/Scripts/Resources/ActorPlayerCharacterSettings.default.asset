@@ -14,7 +14,10 @@ MonoBehaviour:
   cameraTargetPrefab: {fileID: 114204490640219438, guid: 2bd85641eb22c4e519609b227b258041,
     type: 2}
   runEffects:
-  - minSpeed: 10.5
+  - minSpeed: 2
+    effectPrefab: {fileID: 114673235513151908, guid: 6b12ab9314fe5494ea12bb52ba872f00,
+      type: 2}
+  - minSpeed: 12
     effectPrefab: {fileID: 114673235513151908, guid: a8e11cc120d26054c9030ed4dc40e44c,
       type: 2}
   - minSpeed: 14

@@ -80,6 +80,7 @@ public class PhysicsCharacterController : SubComponent<Actor>
         // if we found a ground. these are the variables for it
         var hitPointLocal = transform.InverseTransformPoint(raycastHit.point);
         var groundPoint = transform.TransformPoint(0, hitPointLocal.y, 0f);
+        var groundNormal = raycastHit.normal;
         var slopeAngle = Vector3.Angle(Vector3.up, raycastHit.normal);
         var walkableSlope = slopeAngle < settings.maxSlopeAngle;
         var withinStepHeight = isGrounded&&walkableSlope 
@@ -103,31 +104,7 @@ public class PhysicsCharacterController : SubComponent<Actor>
 
 
         Debug.DrawRay(stepRay.origin, stepRay.direction * settings.colliderSettings.stepHeight * 2f,
-            raycastHit.collider != null ? Color.green : Color.red);
-        /*
-        // apply input accel
-        var velocityXZ = m_rigidBody.velocity.XZ();
-        var speed = velocityXZ.magnitude;
-        var accelCurve = isGrounded ? settings.groundAccelerationVsSpeed : settings.airAccelerationVsSpeed;
-        var accel = accelCurve.Evaluate(speed/settings.maxSpeed);
-        var velocityOffset = accel * moveXZ.X_Y() * Time.fixedDeltaTime;
-        if (!walkableSlope)
-        {
-            // block acceleration against non-walkable slopes
-            var velocityOffsetDotFlatNormal = Vector3.Dot(flatNormal, velocityOffset);
-            if (velocityOffsetDotFlatNormal < 0)
-            {
-                velocityOffset += -flatNormal * velocityOffsetDotFlatNormal;
-            }
-        }
-        //if(moveXZ.sqrMagnitude <= 0f || Vector2.Dot(velocityXZ, moveXZ)<0)
-        {
-            var drag = Mathf.Clamp01(settings.dragRatio.Evaluate(Vector2.Dot(velocityXZ, moveXZ)));
-            velocityOffset += -drag * velocityXZ.X_Y();
-        }
-
-        m_rigidBody.velocity += velocityOffset;
-        */
+            raycastHit.collider != null ? Color.green : Color.red);      
 
         // apply desired vel    
         var velocityXZ = m_rigidBody.velocity.XZ();
@@ -137,7 +114,7 @@ public class PhysicsCharacterController : SubComponent<Actor>
         var speed = m_rigidBody.velocity.magnitude;
         var accelCurve = isGrounded ? settings.groundAccelerationVsSpeed : settings.airAccelerationVsSpeed;
         var accel = accelCurve.Evaluate(speed / settings.maxSpeed);
-        var desiredSpeed = speed + accel * Time.fixedDeltaTime;
+        var desiredSpeed = speedXZ + accel * Time.fixedDeltaTime;
 
         var desiredVelocity = desiredSpeed * moveXZ.X_Y() + Vector3.up * m_rigidBody.velocity.y;
         var desiredVelDotVelXZ = Vector2.Dot(m_rigidBody.velocity.XZ(), moveXZ);
@@ -206,7 +183,7 @@ public class PhysicsCharacterController : SubComponent<Actor>
             var lateJump = jump && !m_hasJumped && airTime > 0 && (Time.fixedDeltaTime - airTime) < settings.lateJumpTime;
             if (earlyJump || lateJump)
             {
-                m_rigidBody.velocity += Vector3.Lerp(m_groundNormal, transform.up, .5f) * settings.jumpImpulse;
+                m_rigidBody.velocity += Vector3.Lerp(m_groundNormal, transform.up, .75f) * settings.jumpImpulse;
                 jump = false;
                 isJumpRising = true;
                 isGrounded = false;

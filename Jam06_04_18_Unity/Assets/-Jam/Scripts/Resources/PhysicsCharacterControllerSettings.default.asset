@@ -22,7 +22,7 @@ MonoBehaviour:
       tangentMode: 0
     - serializedVersion: 2
       time: 0.5
-      value: 598.9015
+      value: 600
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -40,9 +40,21 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 2
       time: 0
-      value: 50
+      value: 100
       inSlope: 0
       outSlope: 0
+      tangentMode: 136
+    - serializedVersion: 2
+      time: 0.49948046
+      value: 100
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+    - serializedVersion: 2
+      time: 0.8731663
+      value: 60.498974
+      inSlope: -199.7924
+      outSlope: -199.7924
       tangentMode: 136
     - serializedVersion: 2
       time: 1
@@ -63,29 +75,35 @@ MonoBehaviour:
       outSlope: 0
       tangentMode: 0
     - serializedVersion: 2
-      time: 0.5
+      time: 1
       value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
     - serializedVersion: 2
+      time: 1.6999049
+      value: 0.56477994
+      inSlope: -1.4996529
+      outSlope: -1.4996529
+      tangentMode: 0
+    - serializedVersion: 2
       time: 2
       value: 0
-      inSlope: -1.1149987
-      outSlope: -1.1149987
+      inSlope: 0
+      outSlope: 0
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
-  onGroundVelocityBlend: 3
+  onGroundVelocityBlend: 4
   groundBreakVelocityBlend: 6
   airVelocityBlend: 2
-  jumpImpulse: 10
+  jumpImpulse: 12
   earlyJumpTime: 0.5
   lateJumpTime: 0.2
   gravityFactor: 3
   maxSlopeAngle: 46
-  maxSpeed: 11
+  maxSpeed: 12
   colliderSettings:
     height: 1.8
     radius: 0.35
