@@ -5,11 +5,12 @@ public class PhysicsCharacterController : SubComponent<Actor>
 {
     public PhysicsCharacterControllerSettings.Reference settings = new PhysicsCharacterControllerSettings.Reference();
 
+    public bool isJumping { get; private set; }
     public bool isGrounded { get; private set; }
+    public Vector3 velocity { get { return m_rigidBody.velocity; } }
     public bool jump { get; set; }
     public Vector2 moveXZ { get; set; }
 
-    private bool m_isJumpRising;
     private Vector3 m_prevPosition;
     private Rigidbody m_rigidBody;
     private CapsuleCollider m_capsuleCollider;
@@ -36,7 +37,7 @@ public class PhysicsCharacterController : SubComponent<Actor>
     {
         FixedUpdate_Move();
         
-        if (moveXZ.sqrMagnitude > 0f)
+        if (moveXZ.sqrMagnitude > 0f && isGrounded)
         {
             var currentAngle = transform.forward.XZ().ToAngle();
             var desiredAngle = moveXZ.ToAngle();
@@ -51,7 +52,7 @@ public class PhysicsCharacterController : SubComponent<Actor>
         var desiredVelocity = settings.maxSpeed * moveXZ.X_Y() + Vector3.up * m_rigidBody.velocity.y;
 
         // check if the jump is still rising
-        m_isJumpRising &= m_rigidBody.velocity.y > 0;
+        isJumping &= m_rigidBody.velocity.y > 0;
 
         // stepRay - find the ground
         var localStepRayOrigin = new Vector3(0, settings.colliderSettings.stepHeight, 0);
@@ -85,7 +86,7 @@ public class PhysicsCharacterController : SubComponent<Actor>
         // are we on the ground?
         if (mainStepRayResult)
         {
-            isGrounded = withinStepHeight && !m_isJumpRising;
+            isGrounded = withinStepHeight && !isJumping;
             if (isGrounded)
             {
                 m_groundNormal = raycastHit.normal;                
@@ -133,7 +134,7 @@ public class PhysicsCharacterController : SubComponent<Actor>
         {            
             m_rigidBody.velocity += Vector3.Lerp(m_groundNormal,transform.up,.5f) * settings.jumpImpulse;
             jump = false;
-            m_isJumpRising = true;
+            isJumping = true;
             isGrounded = false;
         }
 

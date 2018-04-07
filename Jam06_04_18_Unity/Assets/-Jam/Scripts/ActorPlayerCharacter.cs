@@ -26,6 +26,10 @@ public class ActorPlayerCharacter : Actor
         {
             var camTranform = m_cameraTarget.transform;
             var input2d = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+            if (Input.GetButton("Fire1")) 
+            {
+                input2d *= 0.5f;   
+            }
             var input = input2d.x*camTranform.right + input2d.y*camTranform.forward;           
             var inputXZ = input.XZ().normalized * input2d.magnitude;
 
@@ -33,7 +37,7 @@ public class ActorPlayerCharacter : Actor
             characterController.jump = Input.GetButtonDown("Jump");
         }
 
-        if (characterController.isGrounded && characterController.moveXZ.sqrMagnitude > 0)
+        if (characterController.isGrounded && characterController.moveXZ.sqrMagnitude > 0.5f)
         {
             if (m_runEffect == null)
             {

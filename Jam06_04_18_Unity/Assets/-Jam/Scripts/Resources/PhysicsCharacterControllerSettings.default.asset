@@ -11,8 +11,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b0096571c9524a77afc5d761aa69b8b, type: 3}
   m_Name: PhysicsCharacterControllerSettings.default
   m_EditorClassIdentifier: 
+  groundAccelerationVsSpeed:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  breakAccelerationVsSpeed:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  airAccelerationVsSpeed:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   onGroundVelocityBlend: 2
-  groundBreakVelocityBlend: 10
+  groundBreakVelocityBlend: 5
   airVelocityBlend: 2
   jumpImpulse: 10
   gravityFactor: 3
