@@ -1,0 +1,11 @@
+{
+  "name": "jam-06-04-18",
+  "version": "1.0.1",
+  "description": "",
+  "scripts": {
+    "sync": "unity3d--sync"
+  },
+  "dependencies": {
+    "unity3d-package-syncer": "^1.0.1"
+  }
+}

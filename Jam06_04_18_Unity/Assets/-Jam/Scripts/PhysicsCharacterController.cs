@@ -53,7 +53,6 @@ public class PhysicsCharacterController : SubComponent<Actor>
     private void FixedUpdate_Move()
     {
         var settings = this.settings.value;
-        var desiredVelocity = settings.maxSpeed * moveXZ.X_Y() + Vector3.up * m_rigidBody.velocity.y;
 
         // check if the jump is still rising
         isJumpRising &= m_rigidBody.velocity.y > 0;
@@ -76,7 +75,6 @@ public class PhysicsCharacterController : SubComponent<Actor>
                 stepRay.origin = transform.TransformPoint(new Vector3(localHit.x, localStepRayOrigin.y, localHit.z));
                 mainStepRayResult = Physics.Raycast(stepRay, out raycastHit, settings.colliderSettings.stepHeight * 2);
             }
-
         }
 
         // if we found a ground. these are the variables for it
@@ -104,8 +102,42 @@ public class PhysicsCharacterController : SubComponent<Actor>
 
         Debug.DrawRay(stepRay.origin, stepRay.direction * settings.colliderSettings.stepHeight * 2f,
             raycastHit.collider != null ? Color.green : Color.red);
-       
-        // apply desired vel       
+        /*
+        // apply input accel
+        var velocityXZ = m_rigidBody.velocity.XZ();
+        var speed = velocityXZ.magnitude;
+        var accelCurve = isGrounded ? settings.groundAccelerationVsSpeed : settings.airAccelerationVsSpeed;
+        var accel = accelCurve.Evaluate(speed/settings.maxSpeed);
+        var velocityOffset = accel * moveXZ.X_Y() * Time.fixedDeltaTime;
+        if (!walkableSlope)
+        {
+            // block acceleration against non-walkable slopes
+            var velocityOffsetDotFlatNormal = Vector3.Dot(flatNormal, velocityOffset);
+            if (velocityOffsetDotFlatNormal < 0)
+            {
+                velocityOffset += -flatNormal * velocityOffsetDotFlatNormal;
+            }
+        }
+        //if(moveXZ.sqrMagnitude <= 0f || Vector2.Dot(velocityXZ, moveXZ)<0)
+        {
+            var drag = Mathf.Clamp01(settings.dragRatio.Evaluate(Vector2.Dot(velocityXZ, moveXZ)));
+            velocityOffset += -drag * velocityXZ.X_Y();
+        }
+
+        m_rigidBody.velocity += velocityOffset;
+        */
+
+        // apply desired vel    
+        var velocityXZ = m_rigidBody.velocity.XZ();
+        var speedXZ = velocityXZ.magnitude;
+        var turnSpeed = Mathf.Abs(Mathf.DeltaAngle(velocityXZ.ToAngle(), moveXZ.ToAngle()) * Time.fixedDeltaTime);
+        var speedRetain = Mathf.Clamp01(moveXZ.magnitude*settings.speedRetainVsAngle.Evaluate(turnSpeed));
+        var speed = m_rigidBody.velocity.magnitude;
+        var accelCurve = isGrounded ? settings.groundAccelerationVsSpeed : settings.airAccelerationVsSpeed;
+        var accel = accelCurve.Evaluate(speed / settings.maxSpeed);
+        var desiredSpeed = speed + accel * Time.fixedDeltaTime;
+
+        var desiredVelocity = desiredSpeed * moveXZ.X_Y() + Vector3.up * m_rigidBody.velocity.y;
         var desiredVelDotVelXZ = Vector2.Dot(m_rigidBody.velocity.XZ(), moveXZ);
         var blendRate = isGrounded ? (desiredVelDotVelXZ > 0 ? settings.onGroundVelocityBlend : settings.groundBreakVelocityBlend) : settings.airVelocityBlend;
         var desiredDotFlatNormal = Vector3.Dot(flatNormal, desiredVelocity);
@@ -118,6 +150,9 @@ public class PhysicsCharacterController : SubComponent<Actor>
         }
         desiredVelocity.y = m_rigidBody.velocity.y;
         m_rigidBody.velocity = Vector3.Lerp(m_rigidBody.velocity, desiredVelocity, Time.fixedDeltaTime * blendRate);
+        var lerpedSpeedXZ = m_rigidBody.velocity.XZ().magnitude;
+        var newSpeed = Mathf.Lerp(lerpedSpeedXZ, Mathf.Max(speedXZ, lerpedSpeedXZ), speedRetain);
+        m_rigidBody.velocity = m_rigidBody.velocity.y * Vector3.up + m_rigidBody.velocity.X_Z().normalized * newSpeed;
 
         // gravity
         m_rigidBody.velocity += Physics.gravity * settings.gravityFactor * Time.fixedDeltaTime;
@@ -181,5 +216,6 @@ public class PhysicsCharacterController : SubComponent<Actor>
         m_prevPosition = transform.position;
         m_velocity = m_rigidBody.velocity;
         m_desiredVelocity = desiredVelocity;
+        //m_desiredVelocity = velocityOffset;
     }
 }

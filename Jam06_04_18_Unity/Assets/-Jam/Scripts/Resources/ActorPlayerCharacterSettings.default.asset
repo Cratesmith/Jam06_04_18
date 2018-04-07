@@ -13,5 +13,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cameraTargetPrefab: {fileID: 114310406390309922, guid: b0f54208eac6ef649b17dc552d48ff44,
     type: 2}
-  runEffectPrefab: {fileID: 114673235513151908, guid: a8e11cc120d26054c9030ed4dc40e44c,
-    type: 2}
+  runEffects:
+  - minSpeed: 9
+    effectPrefab: {fileID: 114673235513151908, guid: a8e11cc120d26054c9030ed4dc40e44c,
+      type: 2}
+  - minSpeed: 14
+    effectPrefab: {fileID: 114673235513151908, guid: 5abb99111071f4b73a790fe8697bc750,
+      type: 2}
+  - minSpeed: 16
+    effectPrefab: {fileID: 114673235513151908, guid: 1e762441b850647b0bd156fb0c7b344e,
+      type: 2}

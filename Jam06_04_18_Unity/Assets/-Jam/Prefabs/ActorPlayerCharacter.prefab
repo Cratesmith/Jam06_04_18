@@ -2090,19 +2090,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d286e071d467c342981314b4efe329d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_onGroundVelocityBlend: 2
-  m_groundBreakVelocityBlend: 10
-  m_airVelocityBlend: 2
-  m_jumpImpulse: 10
-  m_gravityFactor: 3
-  m_maxSlopeAngle: 46
-  m_maxSpeed: 15
-  m_colliderSettings:
-    height: 2
-    radius: 0.35
-    stepHeight: 0.5
-  m_rigidbodySettings:
-    mass: 1
+  settings:
+    overrideValue: {fileID: 0}
 --- !u!114 &114785162340099762
 MonoBehaviour:
   m_ObjectHideFlags: 1

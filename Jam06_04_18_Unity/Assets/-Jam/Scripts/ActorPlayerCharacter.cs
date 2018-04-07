@@ -7,7 +7,10 @@ public class ActorPlayerCharacter : Actor
     public ActorPlayerCharacterSettings.Reference settings = new ActorPlayerCharacterSettings.Reference();
     public PhysicsCharacterController characterController { get; private set;}
     private ActorPlayerCameraTarget m_cameraTarget;
+
+    private float m_prevSpeed = 0;
     private Effect m_runEffect;
+    private Effect m_runEffectPrefab;
 
     void Awake()
     {
@@ -31,25 +34,37 @@ public class ActorPlayerCharacter : Actor
                 input2d *= 0.5f;   
             }
             var input = input2d.x*camTranform.right + input2d.y*camTranform.forward;           
-            var inputXZ = input.XZ().normalized * input2d.magnitude;
+            var inputXZ = input.XZ().normalized * Mathf.Min(input2d.magnitude,1f);
 
             characterController.moveXZ = inputXZ;
             characterController.jump = Input.GetButton("Jump");
         }
 
-        if (characterController.isGrounded && characterController.moveXZ.sqrMagnitude > 0.5f)
+        Effect newEffectPrefab = null;
+        if (characterController.isGrounded)
         {
-            if (m_runEffect == null)
+            var speed = characterController.velocity.magnitude;
+            foreach (var runEffect in settings.value.runEffects)
             {
-                m_runEffect = Effect.Spawn(settings.value.runEffectPrefab, transform.position, transform.rotation, transform);
+                if (speed >= runEffect.minSpeed)
+                {
+                    newEffectPrefab = runEffect.effectPrefab;
+                }
             }
         }
-        else
+
+        if(newEffectPrefab!=m_runEffectPrefab)
         {
-            if (m_runEffect != null)
+            m_runEffectPrefab = newEffectPrefab;
+            if(m_runEffect!=null)
             {
                 m_runEffect.Stop();
                 m_runEffect = null;
+            }
+
+            if(m_runEffectPrefab!=null)
+            {
+                m_runEffect = Effect.Spawn(m_runEffectPrefab, transform.position, transform.rotation, transform);
             }
         }
     }

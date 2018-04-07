@@ -3,9 +3,10 @@ using UnityEngine;
 
 public class PhysicsCharacterControllerSettings : SettingsAsset<PhysicsCharacterControllerSettings>
 {
-    public AnimationCurve groundAccelerationVsSpeed = new AnimationCurve();
-    public AnimationCurve breakAccelerationVsSpeed = new AnimationCurve();
-    public AnimationCurve airAccelerationVsSpeed = new AnimationCurve();
+    public AnimationCurve groundAccelerationVsSpeed = AnimationCurve.EaseInOut(0, 5, 1, 0);
+    public AnimationCurve airAccelerationVsSpeed = AnimationCurve.EaseInOut(0, 5, 1, 0);
+    public AnimationCurve speedRetainVsAngle = AnimationCurve.EaseInOut(0, 1, 90, 0);
+
 
     public float onGroundVelocityBlend = 25;
     public float groundBreakVelocityBlend = 30;

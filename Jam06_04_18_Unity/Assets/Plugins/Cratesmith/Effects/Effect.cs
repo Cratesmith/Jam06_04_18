@@ -100,7 +100,7 @@ public class Effect : Actor
         {
             foreach(var trailRenderer in trailRenderers)
             {
-                trailRenderer.time = Mathf.Lerp(trailRenderer.time, 0, Time.deltaTime*2f);
+                trailRenderer.time = Mathf.Lerp(trailRenderer.time, 0, Time.deltaTime*4f);
             }
         }
 
