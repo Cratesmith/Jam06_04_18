@@ -9,7 +9,8 @@ public class Effect : Actor
 	private static Dictionary<Scene, Transform> s_effectSceneRoots = new Dictionary<Scene, Transform>();
 
 	private List<EffectComponent>	m_effectComponents = new List<EffectComponent>();
-	public ParticleSystem[]			particleSystems		{ get; private set; }
+    public ParticleSystem[]         particleSystems     { get; private set; }
+    public TrailRenderer[]			trailRenderers		{ get; private set; }
 	public AudioSource[]			audioSources		{ get; private set; }
 	public Transform				parent				{ get; private set; }
 	public float					startTime			{ get; private set; }
@@ -63,6 +64,7 @@ public class Effect : Actor
 	void Awake()
 	{
 		particleSystems = GetComponentsInChildren<ParticleSystem>();
+        trailRenderers = GetComponentsInChildren<TrailRenderer>();
 		audioSources = GetComponentsInChildren<AudioSource>();
 		startTime = Time.time;
 	}
@@ -94,6 +96,14 @@ public class Effect : Actor
 			Stop();
 		}
 
+        if(isStopping)
+        {
+            foreach(var trailRenderer in trailRenderers)
+            {
+                trailRenderer.time = Mathf.Lerp(trailRenderer.time, 0, Time.deltaTime*2f);
+            }
+        }
+
 		if (Time.time - startTime < EFFECT_GRACE_TIME)
 		{
 			return;
@@ -122,6 +132,14 @@ public class Effect : Actor
 				return;
 			}
 		}
+
+        foreach (var trailRenderer in trailRenderers)
+        {
+            if (trailRenderer.positionCount > 0 && trailRenderer.time > 0f)
+            {
+                return;
+            }
+        }
 
 		Destroy(gameObject);
 	}
