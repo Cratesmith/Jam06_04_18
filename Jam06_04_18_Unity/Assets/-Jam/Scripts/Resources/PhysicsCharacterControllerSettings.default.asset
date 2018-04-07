@@ -19,7 +19,7 @@ MonoBehaviour:
   maxSlopeAngle: 46
   maxSpeed: 15
   colliderSettings:
-    height: 2
+    height: 1.8
     radius: 0.35
     stepHeight: 0.5
   rigidbodySettings:
