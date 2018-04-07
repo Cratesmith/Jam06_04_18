@@ -3,10 +3,16 @@ using UnityEngine;
 
 public class PhysicsCharacterControllerSettings : SettingsAsset<PhysicsCharacterControllerSettings>
 {
+    public AnimationCurve groundAccelerationVsSpeed = new AnimationCurve();
+    public AnimationCurve breakAccelerationVsSpeed = new AnimationCurve();
+    public AnimationCurve airAccelerationVsSpeed = new AnimationCurve();
+
     public float onGroundVelocityBlend = 25;
     public float groundBreakVelocityBlend = 30;
     public float airVelocityBlend = 5;
     public float jumpImpulse = 10;
+    public float earlyJumpTime = .2f;
+    public float lateJumpTime = .2f;
     public float gravityFactor = 2;
     public float maxSlopeAngle = 45;
     public float maxSpeed = 10;

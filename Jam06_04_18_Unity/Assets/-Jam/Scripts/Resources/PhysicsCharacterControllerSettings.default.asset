@@ -33,6 +33,8 @@ MonoBehaviour:
   groundBreakVelocityBlend: 5
   airVelocityBlend: 2
   jumpImpulse: 10
+  earlyJumpTime: 0.5
+  lateJumpTime: 0.2
   gravityFactor: 3
   maxSlopeAngle: 46
   maxSpeed: 15

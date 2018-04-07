@@ -5,8 +5,10 @@ public class PhysicsCharacterController : SubComponent<Actor>
 {
     public PhysicsCharacterControllerSettings.Reference settings = new PhysicsCharacterControllerSettings.Reference();
 
-    public bool isJumping { get; private set; }
+    public bool isJumpRising { get; private set; }
     public bool isGrounded { get; private set; }
+    public float airTime { get; private set; }
+
     public Vector3 velocity { get { return m_rigidBody.velocity; } }
     public bool jump { get; set; }
     public Vector2 moveXZ { get; set; }
@@ -17,6 +19,8 @@ public class PhysicsCharacterController : SubComponent<Actor>
     private Vector3 m_groundNormal;
     private Vector3 m_velocity;
     private Vector3 m_desiredVelocity;
+    private float   m_earlyJumpTime;
+    private bool    m_hasJumped;
 
     protected void Awake()
     {
@@ -37,7 +41,7 @@ public class PhysicsCharacterController : SubComponent<Actor>
     {
         FixedUpdate_Move();
         
-        if (moveXZ.sqrMagnitude > 0f && isGrounded)
+        if (moveXZ.sqrMagnitude > 0f && (isGrounded||isJumpRising))
         {
             var currentAngle = transform.forward.XZ().ToAngle();
             var desiredAngle = moveXZ.ToAngle();
@@ -52,7 +56,7 @@ public class PhysicsCharacterController : SubComponent<Actor>
         var desiredVelocity = settings.maxSpeed * moveXZ.X_Y() + Vector3.up * m_rigidBody.velocity.y;
 
         // check if the jump is still rising
-        isJumping &= m_rigidBody.velocity.y > 0;
+        isJumpRising &= m_rigidBody.velocity.y > 0;
 
         // stepRay - find the ground
         var localStepRayOrigin = new Vector3(0, settings.colliderSettings.stepHeight, 0);
@@ -86,16 +90,17 @@ public class PhysicsCharacterController : SubComponent<Actor>
         // are we on the ground?
         if (mainStepRayResult)
         {
-            isGrounded = withinStepHeight && !isJumping;
+            isGrounded = withinStepHeight && !isJumpRising;
             if (isGrounded)
             {
-                m_groundNormal = raycastHit.normal;                
-            }                  
+                m_groundNormal = raycastHit.normal;
+            }
         }
         else
         {
             isGrounded = false;
         }
+
 
         Debug.DrawRay(stepRay.origin, stepRay.direction * settings.colliderSettings.stepHeight * 2f,
             raycastHit.collider != null ? Color.green : Color.red);
@@ -129,13 +134,48 @@ public class PhysicsCharacterController : SubComponent<Actor>
             Debug.DrawRay(raycastHit.point, transform.forward, Color.green);
         }
 
+        // update the jump input cache timer (used for early jumps)
+        if(jump)
+        {
+            if(m_earlyJumpTime == 0)
+            {
+                m_earlyJumpTime = Time.fixedDeltaTime;
+            }
+        }
+        else 
+        {
+            if (m_earlyJumpTime < 0)
+            {
+                m_earlyJumpTime = 0;
+            }
+        }
+
+        // update the airtime counter & hasJumped flag (used for late jumps)
+        if(isGrounded)
+        {
+            m_hasJumped = false;
+            airTime = 0f;
+        }
+        else
+        {
+            airTime += Time.fixedDeltaTime;
+        }
+
+
         // handle jump if we're still grounded
-        if (jump && isGrounded)
-        {            
-            m_rigidBody.velocity += Vector3.Lerp(m_groundNormal,transform.up,.5f) * settings.jumpImpulse;
-            jump = false;
-            isJumping = true;
-            isGrounded = false;
+        if (!isJumpRising)
+        {
+            var earlyJump = isGrounded && m_earlyJumpTime > 0 && (Time.fixedDeltaTime - m_earlyJumpTime) < settings.earlyJumpTime;
+            var lateJump = jump && !m_hasJumped && airTime > 0 && (Time.fixedDeltaTime - airTime) < settings.lateJumpTime;
+            if (earlyJump || lateJump)
+            {
+                m_rigidBody.velocity += Vector3.Lerp(m_groundNormal, transform.up, .5f) * settings.jumpImpulse;
+                jump = false;
+                isJumpRising = true;
+                isGrounded = false;
+                m_hasJumped = true;
+                m_earlyJumpTime = -1f;
+            }
         }
 
         m_prevPosition = transform.position;
