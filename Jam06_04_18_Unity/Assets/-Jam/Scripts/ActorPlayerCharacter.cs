@@ -30,7 +30,7 @@ public class ActorPlayerCharacter : Actor
             var inputXZ = input.XZ().normalized * input2d.magnitude;
 
             characterController.moveXZ = inputXZ;
-            characterController.jump = Input.GetButtonDown("Fire1");
+            characterController.jump = Input.GetButtonDown("Jump");
         }
 
         if (characterController.isGrounded && characterController.moveXZ.sqrMagnitude > 0)
