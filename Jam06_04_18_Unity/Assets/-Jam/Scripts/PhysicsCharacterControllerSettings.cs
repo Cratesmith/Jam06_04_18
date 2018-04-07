@@ -57,6 +57,7 @@ public class PhysicsCharacterControllerSettings : SettingsAsset<PhysicsCharacter
             rigidBody.mass = mass;
             rigidBody.constraints = RigidbodyConstraints.FreezeRotation;
             rigidBody.useGravity = false;
+            rigidBody.interpolation = RigidbodyInterpolation.Interpolate;
         }
     }
     public RigidbodySettings rigidbodySettings = new RigidbodySettings();

@@ -11,10 +11,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc84e4cb220af394fbd824a96c2d3f5a, type: 3}
   m_Name: ActorPlayerCharacterSettings.default
   m_EditorClassIdentifier: 
-  cameraTargetPrefab: {fileID: 114310406390309922, guid: b0f54208eac6ef649b17dc552d48ff44,
+  cameraTargetPrefab: {fileID: 114204490640219438, guid: 2bd85641eb22c4e519609b227b258041,
     type: 2}
   runEffects:
-  - minSpeed: 9
+  - minSpeed: 10.5
     effectPrefab: {fileID: 114673235513151908, guid: a8e11cc120d26054c9030ed4dc40e44c,
       type: 2}
   - minSpeed: 14

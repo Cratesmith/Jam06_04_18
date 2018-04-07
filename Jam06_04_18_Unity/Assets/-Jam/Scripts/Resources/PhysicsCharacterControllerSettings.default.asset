@@ -71,8 +71,8 @@ MonoBehaviour:
     - serializedVersion: 2
       time: 2
       value: 0
-      inSlope: 0
-      outSlope: 0
+      inSlope: -1.1149987
+      outSlope: -1.1149987
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
@@ -85,7 +85,7 @@ MonoBehaviour:
   lateJumpTime: 0.2
   gravityFactor: 3
   maxSlopeAngle: 46
-  maxSpeed: 10
+  maxSpeed: 11
   colliderSettings:
     height: 1.8
     radius: 0.35

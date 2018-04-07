@@ -62,7 +62,7 @@ public class PhysicsCharacterController : SubComponent<Actor>
         var mainStepRay = new Ray(transform.TransformPoint(localStepRayOrigin), -transform.up);
         var stepRay = mainStepRay;
         RaycastHit raycastHit;
-        var mainStepRayResult = Physics.Raycast(stepRay, out raycastHit, settings.colliderSettings.stepHeight * 2);
+        var mainStepRayResult = Physics.Raycast(stepRay, out raycastHit, settings.colliderSettings.stepHeight * 3);
         if (!mainStepRayResult)
         {
             if (Physics.SphereCast(transform.TransformPoint(new Vector3(0, settings.colliderSettings.height, 0)),
@@ -73,16 +73,18 @@ public class PhysicsCharacterController : SubComponent<Actor>
             {
                 var localHit = transform.InverseTransformPoint(raycastHit.point);
                 stepRay.origin = transform.TransformPoint(new Vector3(localHit.x, localStepRayOrigin.y, localHit.z));
-                mainStepRayResult = Physics.Raycast(stepRay, out raycastHit, settings.colliderSettings.stepHeight * 2);
+                mainStepRayResult = Physics.Raycast(stepRay, out raycastHit, settings.colliderSettings.stepHeight * 3);
             }
         }
 
         // if we found a ground. these are the variables for it
         var hitPointLocal = transform.InverseTransformPoint(raycastHit.point);
         var groundPoint = transform.TransformPoint(0, hitPointLocal.y, 0f);
-        var withinStepHeight = raycastHit.distance - 0.001f <= settings.colliderSettings.stepHeight;
         var slopeAngle = Vector3.Angle(Vector3.up, raycastHit.normal);
         var walkableSlope = slopeAngle < settings.maxSlopeAngle;
+        var withinStepHeight = isGrounded&&walkableSlope 
+            ? raycastHit.distance - 0.001f <= settings.colliderSettings.stepHeight*2
+            :raycastHit.distance - 0.001f <= settings.colliderSettings.stepHeight;
         var flatNormal = new Vector3(raycastHit.normal.x, 0, raycastHit.normal.z).normalized;
 
         // are we on the ground?
@@ -162,7 +164,7 @@ public class PhysicsCharacterController : SubComponent<Actor>
         {
             m_rigidBody.MovePosition(groundPoint);
 
-            if (Vector3.Dot(raycastHit.normal, m_rigidBody.velocity) <= 0)
+            if (Mathf.Abs(Vector3.Dot(raycastHit.normal, m_rigidBody.velocity))>0)
             {             
                 m_rigidBody.velocity += -raycastHit.normal * Vector3.Dot(raycastHit.normal, m_rigidBody.velocity);
             }
