@@ -24,3 +24,5 @@ MonoBehaviour:
     executionOrder: -6
   - typeName: Effect
     executionOrder: -4
+  - typeName: SensorTriggerRigidbody
+    executionOrder: -2

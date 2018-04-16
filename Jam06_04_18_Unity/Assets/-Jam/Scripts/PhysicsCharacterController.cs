@@ -62,18 +62,20 @@ public class PhysicsCharacterController : SubComponent<Actor>
         var mainStepRay = new Ray(transform.TransformPoint(localStepRayOrigin), -transform.up);
         var stepRay = mainStepRay;
         RaycastHit raycastHit;
-        var mainStepRayResult = Physics.Raycast(stepRay, out raycastHit, settings.colliderSettings.stepHeight * 3);
+        var mainStepRayResult = Physics.Raycast(stepRay, out raycastHit, settings.colliderSettings.stepHeight * 3, settings.groundLayerMask, QueryTriggerInteraction.Ignore);
         if (!mainStepRayResult)
         {
             if (Physics.SphereCast(transform.TransformPoint(new Vector3(0, settings.colliderSettings.height, 0)),
                 settings.colliderSettings.radius / 2f,
                 -transform.up,
                 out raycastHit,
-                settings.colliderSettings.height))
+                settings.colliderSettings.height,
+                settings.groundLayerMask, 
+                QueryTriggerInteraction.Ignore))
             {
                 var localHit = transform.InverseTransformPoint(raycastHit.point);
                 stepRay.origin = transform.TransformPoint(new Vector3(localHit.x, localStepRayOrigin.y, localHit.z));
-                mainStepRayResult = Physics.Raycast(stepRay, out raycastHit, settings.colliderSettings.stepHeight * 3);
+                mainStepRayResult = Physics.Raycast(stepRay, out raycastHit, settings.colliderSettings.stepHeight * 3, settings.groundLayerMask, QueryTriggerInteraction.Ignore);
             }
         }
 

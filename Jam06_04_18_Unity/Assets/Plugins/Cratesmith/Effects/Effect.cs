@@ -20,6 +20,11 @@ public class Effect : Actor
 	public Rigidbody				rigidBody			{ get; private set; }
 	public bool						isStopping			{ get; private set; }
 
+    public static Effect Spawn<T>(T effectPrefab, Transform parent) where T : Effect
+    {
+        return Spawn<T>(effectPrefab, parent.transform.position, parent.transform.rotation, parent); 
+    }
+
 	public static Effect Spawn<T>(T effectPrefab, Vector3 position, Quaternion rotation, Transform parent=null) where T:Effect
 	{
 		if (effectPrefab == null)

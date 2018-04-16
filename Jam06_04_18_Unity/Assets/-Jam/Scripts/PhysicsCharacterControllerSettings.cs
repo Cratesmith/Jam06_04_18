@@ -18,6 +18,8 @@ public class PhysicsCharacterControllerSettings : SettingsAsset<PhysicsCharacter
     public float maxSlopeAngle = 45;
     public float maxSpeed = 10;
 
+    public LayerMask groundLayerMask = -1;
+
     [System.Serializable]
     public class ColliderSettings
     {
@@ -61,6 +63,7 @@ public class PhysicsCharacterControllerSettings : SettingsAsset<PhysicsCharacter
         }
     }
     public RigidbodySettings rigidbodySettings = new RigidbodySettings();
+
 
     [Serializable]
     public class Reference : SettingsReference<PhysicsCharacterControllerSettings>
